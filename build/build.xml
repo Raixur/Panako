@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="panako" name="Create the Panako JAR-file">
+
+	<!-- Configuration -->
+	<property name="version" value="1.5" />
+	
+	<!-- Run the ant timestamp task -->
+	<tstamp />
+
+	<!-- Clean the build system -->
+	<target name="clean">
+		<delete dir="../bin" />
+		<delete dir="../doc/javadoc" />
+		<delete dir="Panako-${version}" />
+		<delete file="panako-${version}.jar" />
+	</target>
+
+	<!-- Compiles the java files to bytecode and copy required resources -->
+	<target name="compile">
+		<mkdir dir="../bin" />
+		<javac srcdir="../src" destdir="../bin" includeantruntime="false" >
+			<classpath>
+				<fileset dir="../lib" includes="*.jar" excludes="*src*.jar"  />
+				<fileset dir="../lib/redisson" includes="redisson*.jar" excludes="*src*.jar"  />
+			</classpath>
+		</javac>
+	</target>
+	
+	<!-- Creates javadoc in ../doc/javadoc directory -->
+	<target name="javadoc">
+		<javadoc access="public" 
+			author="true" 
+			classpath="${junit_jar}:../lib/TarsosDSP-2.4.jar:../lib/redisson/redisson-2.2.3.jar:../lib/json-20140107.jar:../lib/commons-exec-1.3.jar:../lib/mapdb-1.0.7.jar:../lib/webserver.jar:../lib/servlet-2-3.jar" 
+			destdir="../doc/javadoc"
+			doctitle="Panako ${version}-${DSTAMP}" 
+			nodeprecated="false" 
+			nodeprecatedlist="false" 
+			noindex="false" 
+			nonavbar="false"
+			notree="false"
+			source="1.7" 
+			sourcepath="../src" 
+			splitindex="true" 
+			use="true" 
+			version="true" />
+	</target>
+	
+	<!-- Creates index.html with info about panako in ../doc/ directory -->
+	<target name="doc" depends="javadoc"> 
+    	<exec dir="../doc/etc" executable="./docs2html"/>
+    </target>
+
+	<!-- Creates the Panako executable JAR-File client -->
+	<target name="panako" depends="compile">
+		<!-- with source code panako-${version}.jar -->
+		<jar destfile="panako-${version}.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<!-- Standard manifest attributes -->
+				<attribute name="Implementation-Version" value="${version}-${DSTAMP}" />
+				<attribute name="Built-By" value="${built_by}" />
+				<attribute name="Created-By" value="${built_by}" />
+				<attribute name="Built-Date" value="${TODAY}" />
+				<attribute name="Main-Class" value="be.panako.cli.Panako" />
+			</manifest>
+			
+			<!-- mapdb jar files -->
+			<zipfileset excludes="META-INF/**" src="../lib/mapdb-1.0.7.jar"/>
+			
+			<!-- JSON lib -->
+			<zipfileset excludes="META-INF/**" src="../lib/json-20140107.jar"/>
+			
+			<!-- Execute scripts -->
+			<zipfileset excludes="META-INF/**" src="../lib/commons-exec-1.3.jar"/>
+			
+			<!-- DSP library -->
+			<zipfileset excludes="META-INF/**" src="../lib/TarsosDSP-2.4.jar"/>
+			
+			<!-- webserver library -->
+			<zipfileset excludes="META-INF/**" src="../lib/webserver.jar"/>
+			
+			<!-- servlet library -->
+			<zipfileset excludes="META-INF/**" src="../lib/servlet-2-3.jar"/>
+			
+			<!-- alt db backend --> 
+			<zipfileset excludes="META-INF/**" src="../lib/redisson/redisson-2.2.3.jar"/>
+			
+    		
+			<!-- exclude everything except src dir -->
+			<fileset dir="../bin">
+				<exclude name="**/*.wav" />
+				<exclude name="**/test/**" />
+			</fileset>
+
+			<!-- include source files -->
+			<fileset dir="../src">
+				<include name="**/*.java" />
+			</fileset>
+			
+			<!-- include API readme -->
+			<fileset file="../src/be/panako/http/api.html" />
+		</jar>
+	</target>
+	
+	<!-- Creates the executable JAR-File -->
+	<target name="syncsink" depends="compile">
+		<!-- with source code panako-${version}.jar -->
+		<jar destfile="SyncSink-${version}.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<!-- Standard manifest attributes -->
+				<attribute name="Implementation-Version" value="${version}-${DSTAMP}" />
+				<attribute name="Built-By" value="${built_by}" />
+				<attribute name="Created-By" value="${built_by}" />
+				<attribute name="Built-Date" value="${TODAY}" />
+				<attribute name="Main-Class" value="be.panako.ui.syncsink.SyncSink" />
+			</manifest>
+			
+			<!-- mapdb jar files -->
+			<zipfileset excludes="META-INF/**" src="../lib/mapdb-1.0.7.jar"/>
+			
+			<!-- JSON lib -->
+			<zipfileset excludes="META-INF/**" src="../lib/json-20140107.jar"/>
+			
+			<!-- Execute scripts -->
+			<zipfileset excludes="META-INF/**" src="../lib/commons-exec-1.3.jar"/>
+			
+			<!-- DSP library -->
+			<zipfileset excludes="META-INF/**" src="../lib/TarsosDSP-2.4.jar"/>
+			
+			<!-- webserver library -->
+			<zipfileset excludes="META-INF/**" src="../lib/webserver.jar"/>
+			
+			<!-- servlet library -->
+			<zipfileset excludes="META-INF/**" src="../lib/servlet-2-3.jar"/>
+			
+			<!-- alt db backend --> 
+			<zipfileset excludes="META-INF/**" src="../lib/redisson/redisson-2.2.3.jar"/>
+    		
+			<!-- exclude everything except src dir -->
+			<fileset dir="../bin">
+				<exclude name="**/*.wav" />
+				<exclude name="**/test/**" />
+			</fileset>
+
+			<!-- include source files -->
+			<fileset dir="../src">
+				<include name="**/*.java" />
+			</fileset>
+			
+			<!-- include API readme -->
+			<fileset file="../src/be/panako/http/api.html" />
+		</jar>
+	</target>
+
+	<!-- builds a release: all examples, documentation and library in the correct folders-->
+	<target name="release" depends="doc,javadoc">
+		
+	    <mkdir dir="Panako-${version}"/>
+	  	<move file="../doc/index.html" tofile="Panako-${version}/readme.html"/>
+		<copy file="../license.txt" tofile="Panako-${version}/LICENSE"/>
+		
+		<copy  todir="Panako-${version}/doc/">
+			<fileset dir="../doc/javadoc"/>
+		</copy>
+		
+		 <zip destfile="Panako-${version}/Panako-${version}-src.zip">
+		 	<zipfileset dir="../src" prefix="Panako/src/"/>
+		 	<zipfileset dir="../lib" prefix="Panako/lib/"/>
+		 	<zipfileset dir="../build" prefix="Panako/build/" >
+		 		<exclude name="**/Panako-*/**"/>
+		 	</zipfileset>
+		 	
+		 	<zipfileset dir="../doc" prefix="Panako/doc/" ></zipfileset>
+		 	<zipfileset dir="Panako-${version}" includes="readme.html" fullpath="Panako/readme.html"/>
+		 	<zipfileset dir="Panako-${version}" includes="LICENSE" fullpath="Panako/LICENSE"/>
+		 </zip>
+	</target>
+	
+	<!-- Installs the panako jar file to /opt/panako -->
+	<target name="install" depends="panako">
+		 <!-- Create the panako directory, if it does not exist -->
+		 <mkdir dir="/opt/panako/log"/>
+		 <!-- Copy the panako execute script -->
+		 <copy file="../doc/panako" tofile="/opt/panako/panako"/>
+		 <!-- Copy the logging configuration and the main jar file -->
+	     <copy file="panako-${version}.jar" tofile="/opt/panako/panako.jar"/>
+		 <!-- Copy the default logging configuration -->
+	     <copy file="logging.properties" tofile="/opt/panako/logging.properties"/>
+		 <!-- Do not copy the configuration itself  -->
+		 <!-- <copy file="config.properties" tofile="/opt/panako/config.properties"/>-->
+	</target>
+</project>
