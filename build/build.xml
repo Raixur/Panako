@@ -27,10 +27,10 @@
 	</target>
 	
 	<!-- Creates javadoc in ../doc/javadoc directory -->
-	<target name="javadoc">
-		<javadoc access="public" 
+	<target name="doc">
+		<javadoc encoding="UTF-8" access="public" 
 			author="true" 
-			classpath="${junit_jar}:../lib/TarsosDSP-2.4.jar:../lib/redisson/redisson-2.2.3.jar:../lib/json-20140107.jar:../lib/commons-exec-1.3.jar:../lib/mapdb-1.0.7.jar:../lib/webserver.jar:../lib/servlet-2-3.jar" 
+			classpath="${junit_jar}:../lib/TarsosDSP-2.4.jar:../lib/redisson/redisson-2.2.3.jar:../lib/json-20140107.jar:../lib/commons-exec-1.3.jar:../lib/mapdb-1.0.7.jar:../lib/webserver.jar:../lib/servlet-2-3.jar:../lib/jssc.jar" 
 			destdir="../doc/javadoc"
 			doctitle="Panako ${version}-${DSTAMP}" 
 			nodeprecated="false" 
@@ -38,7 +38,7 @@
 			noindex="false" 
 			nonavbar="false"
 			notree="false"
-			source="1.7" 
+			source="1.8" 
 			sourcepath="../src" 
 			splitindex="true" 
 			use="true" 
@@ -47,7 +47,7 @@
 	
 	<!-- Creates index.html with info about panako in ../doc/ directory -->
 	<target name="doc" depends="javadoc"> 
-    	<exec dir="../doc/etc" executable="./docs2html"/>
+    	
     </target>
 
 	<!-- Creates the Panako executable JAR-File client -->

@@ -63,10 +63,12 @@ public class NFFTFingerprintHit {
 	 * Time in blocks in the query.
 	 */
 	public int queryTime;
-	
-	
-	
-	public boolean equals(Object other){
+
+    public int getIdentifier() {
+        return identifier;
+    }
+
+    public boolean equals(Object other){
 	    if (other == null){
 	    	return false;
 	    }
@@ -78,8 +80,8 @@ public class NFFTFingerprintHit {
 	    }
 	    NFFTFingerprintHit otherFingerprintHit = (NFFTFingerprintHit) other;
 	    return otherFingerprintHit.identifier == this.identifier 
-	    		&& otherFingerprintHit.matchTime == this.matchTime 
-	    		&& otherFingerprintHit.queryTime == otherFingerprintHit.queryTime;
+	    		&& otherFingerprintHit.matchTime == this.matchTime;
+	    		//&& otherFingerprintHit.queryTime == this.queryTime;
 
 	}
 	
